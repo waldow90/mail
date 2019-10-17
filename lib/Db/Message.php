@@ -25,6 +25,7 @@ declare(strict_types=1);
 
 namespace OCA\Mail\Db;
 
+use Horde_Mail_Rfc822_Identification;
 use JsonSerializable;
 use OCA\Mail\AddressList;
 use OCP\AppFramework\Db\Entity;
@@ -33,8 +34,10 @@ use function in_array;
 /**
  * @method void setUid(int $uid)
  * @method int getUid()
- * @method void setMessageId(string $id)
  * @method string getMessageId()
+ * @method string|null getReferences()
+ * @method string|null getInReplyTo()
+ * @method string|null getThreadRootId()
  * @method void setMailboxId(int $mailbox)
  * @method int getMailboxId()
  * @method void setSubject(string $subject)
@@ -83,6 +86,9 @@ class Message extends Entity implements JsonSerializable {
 
 	protected $uid;
 	protected $messageId;
+	protected $references;
+	protected $inReplyTo;
+	protected $threadRootId;
 	protected $mailboxId;
 	protected $subject;
 	protected $sentAt;
@@ -132,6 +138,31 @@ class Message extends Entity implements JsonSerializable {
 		$this->addType('flagAttachments', 'bool');
 		$this->addType('flagImportant', 'bool');
 		$this->addType('updatedAt', 'integer');
+	}
+
+	public function setMessageId(?string $id): void {
+		$this->setFieldIfNotEmpty('messageId', $id);
+	}
+
+	public function setReferences(?string $references): void {
+		$this->setFieldIfNotEmpty('references', $references);
+	}
+
+	public function setInReplyTo(?string $inReplyTo): void {
+		$this->setFieldIfNotEmpty('inReplyTo', $inReplyTo);
+	}
+
+	public function setThreadRootId(?string $messageId): void {
+		$parsed = new Horde_Mail_Rfc822_Identification($messageId);
+		$this->setFieldIfNotEmpty('threadRootId', $parsed->ids[0] ?? null);
+	}
+
+	private function setFieldIfNotEmpty(string $field, ?string $value): void {
+		if (empty($value)) {
+			parent::setter($field, [null]);
+		} else {
+			parent::setter($field, [$value]);
+		}
 	}
 
 	/**
