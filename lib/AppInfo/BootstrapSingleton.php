@@ -35,6 +35,7 @@ use OCA\Mail\Events\MessageSentEvent;
 use OCA\Mail\Events\SaveDraftEvent;
 use OCA\Mail\Http\Middleware\ErrorMiddleware;
 use OCA\Mail\Listener\AddressCollectionListener;
+use OCA\Mail\Listener\ComplianceListener;
 use OCA\Mail\Listener\DeleteDraftListener;
 use OCA\Mail\Listener\DraftMailboxCreatorListener;
 use OCA\Mail\Listener\FlagRepliedMessageListener;
@@ -49,6 +50,7 @@ use OCA\Mail\Service\MailSearch;
 use OCA\Mail\Service\MailTransmission;
 use OCA\Mail\Service\UserPreferenceSevice;
 use OCP\AppFramework\IAppContainer;
+use OCP\Compliance\Event\ComplianceRequestEvent;
 use OCP\EventDispatcher\IEventDispatcher;
 use OCP\IContainer;
 use OCP\Util;
@@ -117,6 +119,7 @@ class BootstrapSingleton {
 		$dispatcher = $container->query(IEventDispatcher::class);
 
 		$dispatcher->addServiceListener(BeforeMessageDeletedEvent::class, TrashMailboxCreatorListener::class);
+		$dispatcher->addServiceListener(ComplianceRequestEvent::class, ComplianceListener::class);
 		$dispatcher->addServiceListener(DraftSavedEvent::class, DeleteDraftListener::class);
 		$dispatcher->addServiceListener(MessageSentEvent::class, AddressCollectionListener::class);
 		$dispatcher->addServiceListener(MessageSentEvent::class, DeleteDraftListener::class);
