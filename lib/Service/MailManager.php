@@ -148,7 +148,7 @@ class MailManager implements IMailManager {
 		return $this->folderMapper->getFoldersStatusAsObject($client, $folderId);
 	}
 
-	public function getMessage(Account $account, string $mailbox, int $id, bool $loadBody = false): IMAPMessage {
+	public function getMessage(Account $account, string $mailbox, int $id, bool $loadBody = false, bool $raw = false): IMAPMessage {
 		$client = $this->imapClientFactory->getClient($account);
 		$mailbox = $this->mailboxMapper->find($account, $mailbox);
 
@@ -157,7 +157,8 @@ class MailManager implements IMailManager {
 				$client,
 				$mailbox->getMailbox(),
 				$id,
-				$loadBody
+				$loadBody, 
+				$raw
 			);
 		} catch (Horde_Imap_Client_Exception|DoesNotExistException $e) {
 			throw new ServiceException("Could not load message", 0, $e);

@@ -154,6 +154,12 @@ class IMAPMessage implements IMessage, JsonSerializable {
 	}
 
 	/**
+	 */
+	public function getRawMessage() {
+		return $this->fetch->getFullMsg();
+	}
+
+	/**
 	 * @return Horde_Imap_Client_Data_Envelope
 	 */
 	public function getEnvelope() {

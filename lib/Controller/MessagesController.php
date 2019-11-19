@@ -211,6 +211,36 @@ class MessagesController extends Controller {
 
 	/**
 	 * @NoAdminRequired
+ 	 * @NoCSRFRequired
+	 * @TrapError
+	 *
+	 * @param int $accountId
+	 * @param string $folderId
+	 * @param int $messageId
+	 *
+	 * @return JSONResponse
+	 * @throws ServiceException
+	 */
+	public function getRawMessage(int $accountId, string $folderId, int $messageId): JSONResponse {
+		try {
+			$account = $this->accountService->find($this->currentUserId, $accountId);
+		} catch (DoesNotExistException $e) {
+			return new JSONResponse(null, Http::STATUS_FORBIDDEN);
+		}
+
+		$json = $this->mailManager->getMessage(
+			$account,
+			base64_decode($folderId),
+			$messageId,
+			false,
+			true
+		)->getRawMessage();
+
+		return new JSONResponse($json);
+	}
+
+	/**
+	 * @NoAdminRequired
 	 * @NoCSRFRequired
 	 * @TrapError
 	 *

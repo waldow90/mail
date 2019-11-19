@@ -54,8 +54,9 @@ class MessageMapper {
 	public function find(Horde_Imap_Client_Base $client,
 						 string $mailbox,
 						 int $id,
-						 bool $loadBody = false): IMAPMessage {
-		$result = $this->findByIds($client, $mailbox, [$id], $loadBody);
+						 bool $loadBody = false,
+						 bool $raw = false): IMAPMessage {
+		$result = $this->findByIds($client, $mailbox, [$id], $loadBody, $raw);
 
 		if (count($result) === 0) {
 			throw new DoesNotExistException("Message does not exist");
@@ -71,21 +72,33 @@ class MessageMapper {
 	public function findByIds(Horde_Imap_Client_Base $client,
 							  string $mailbox,
 							  array $ids,
-							  bool $loadBody = false): array {
+							  bool $loadBody = false,
+							  bool $raw = false): array {
 		$query = new Horde_Imap_Client_Fetch_Query();
-		$query->envelope();
-		$query->flags();
-		$query->size();
 		$query->uid();
-		$query->imapDate();
-		$query->structure();
+		if ($raw) {
+			$query->fullText();
+		} else {
+			$query->envelope();
+			$query->flags();
+			$query->size();
+			$query->imapDate();
+			$query->structure();
+		}
 
 		$fetchResults = iterator_to_array($client->fetch($mailbox, $query, [
 			'ids' => new Horde_Imap_Client_Ids($ids),
 		]), false);
 
-		return array_map(function (Horde_Imap_Client_Data_Fetch $fetchResult) use ($client, $mailbox, $loadBody) {
-			if ($loadBody) {
+		return array_map(function (Horde_Imap_Client_Data_Fetch $fetchResult) use ($client, $mailbox, $loadBody, $raw) {
+			if ($raw) {
+				return new IMAPMessage(
+					$client,
+					$mailbox,
+					$fetchResult->getUid(),
+					$fetchResult
+				);
+			} elseif ($loadBody) {
 				return new IMAPMessage(
 					$client,
 					$mailbox,
