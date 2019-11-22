@@ -49,6 +49,9 @@
 						<ActionButton icon="icon-delete" @click="onDelete">
 							{{ t('mail', 'Delete') }}
 						</ActionButton>
+						<ActionButton icon="icon-details" @click="showSource">
+							{{ t('mail', 'View source') }}
+						</ActionButton>
 					</Actions>
 				</div>
 			</div>
@@ -263,6 +266,15 @@ export default {
 					messageUid: next.uid,
 				},
 			})
+		},
+		showSource() {
+			window.open(
+				generateUrl('/apps/mail/api/accounts/{accountId}/folders/{folderId}/messages/{id}/raw', {
+					accountId: this.message.accountId,
+					folderId: this.message.folderId,
+					id: this.message.id,
+				})
+			)
 		},
 	},
 }
