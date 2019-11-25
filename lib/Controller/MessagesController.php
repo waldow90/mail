@@ -221,22 +221,52 @@ class MessagesController extends Controller {
 	 * @return JSONResponse
 	 * @throws ServiceException
 	 */
-	public function getRawMessage(int $accountId, string $folderId, int $messageId): JSONResponse {
+	public function getRawMessage(int $accountId, string $folderId, int $messageId): Response {
 		try {
-			$account = $this->accountService->find($this->currentUserId, $accountId);
-		} catch (DoesNotExistException $e) {
-			return new JSONResponse(null, Http::STATUS_FORBIDDEN);
+			try {
+				$account = $this->accountService->find($this->currentUserId, $accountId);
+			} catch (DoesNotExistException $e) {
+				return new TemplateResponse(
+					$this->appName,
+					'error',
+					['message' => 'Not allowed'],
+					'none'
+				);
+			}
+
+			$htmlResponse = new HtmlResponse(
+				nl2br(
+					$this->mailManager->getMessage(
+						$account,
+						base64_decode($folderId),
+						$messageId,
+						false,
+						true
+					)->getRawMessage()
+				)
+			);
+
+			// Harden the default security policy
+			$policy = new ContentSecurityPolicy();
+			$policy->allowEvalScript(false);
+			$policy->disallowScriptDomain('\'self\'');
+			$policy->disallowConnectDomain('\'self\'');
+			$policy->disallowFontDomain('\'self\'');
+			$policy->disallowMediaDomain('\'self\'');
+			$htmlResponse->setContentSecurityPolicy($policy);
+
+			// Enable caching
+			$htmlResponse->cacheFor(60 * 60);
+
+			return $htmlResponse;
+		} catch (Exception $ex) {
+			return new TemplateResponse(
+				$this->appName,
+				'error',
+				['message' => $ex->getMessage()],
+				'none'
+			);
 		}
-
-		$json = $this->mailManager->getMessage(
-			$account,
-			base64_decode($folderId),
-			$messageId,
-			false,
-			true
-		)->getRawMessage();
-
-		return new JSONResponse($json);
 	}
 
 	/**
