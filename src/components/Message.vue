@@ -46,11 +46,11 @@
 						<ActionButton icon="icon-mail" @click="onToggleSeen">
 							{{ envelope.flags.unseen ? t('mail', 'Mark read') : t('mail', 'Mark unread') }}
 						</ActionButton>
-						<ActionButton icon="icon-delete" @click="onDelete">
-							{{ t('mail', 'Delete') }}
-						</ActionButton>
 						<ActionButton icon="icon-details" @click="showSource">
 							{{ t('mail', 'View source') }}
+						</ActionButton>
+						<ActionButton icon="icon-delete" @click="onDelete">
+							{{ t('mail', 'Delete') }}
 						</ActionButton>
 					</Actions>
 				</div>
