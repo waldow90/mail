@@ -46,13 +46,18 @@
 						<ActionButton icon="icon-mail" @click="onToggleSeen">
 							{{ envelope.flags.unseen ? t('mail', 'Mark read') : t('mail', 'Mark unread') }}
 						</ActionButton>
-						<ActionButton icon="icon-details" @click="showSource">
+						<ActionButton icon="icon-details" @click="onShowSource">
 							{{ t('mail', 'View source') }}
 						</ActionButton>
 						<ActionButton icon="icon-delete" @click="onDelete">
 							{{ t('mail', 'Delete') }}
 						</ActionButton>
 					</Actions>
+					<Modal v-if="showSource" :spreadNavigation="true" @close="onCloseSource">
+						<div class="modal__content">
+							<p v-html="rawMessage" />
+						</div>
+					</Modal>
 				</div>
 			</div>
 			<div class="mail-message-body">
@@ -69,6 +74,8 @@
 import Actions from '@nextcloud/vue/dist/Components/Actions'
 import ActionButton from '@nextcloud/vue/dist/Components/ActionButton'
 import AppContentDetails from '@nextcloud/vue/dist/Components/AppContentDetails'
+import Axios from '@nextcloud/axios'
+import Modal from '@nextcloud/vue/dist/Components/Modal'
 import {generateUrl} from '@nextcloud/router'
 
 import AddressList from './AddressList'
@@ -93,6 +100,7 @@ export default {
 		MessageAttachments,
 		MessageHTMLBody,
 		MessagePlainTextBody,
+		Modal,
 	},
 	data() {
 		return {
@@ -103,6 +111,8 @@ export default {
 			replyRecipient: {},
 			replySubject: '',
 			envelope: '',
+			rawMessage: '',
+			showSource: false
 		}
 	},
 	computed: {
@@ -267,14 +277,20 @@ export default {
 				},
 			})
 		},
-		showSource() {
-			window.open(
+		onShowSource() {
+			Axios.get(
 				generateUrl('/apps/mail/api/accounts/{accountId}/folders/{folderId}/messages/{id}/raw', {
 					accountId: this.message.accountId,
 					folderId: this.message.folderId,
 					id: this.message.id,
 				})
-			)
+			).then((resp) => {
+				this.rawMessage = resp.data
+				this.showSource = true
+			})
+		},
+		onCloseSource() {
+			this.showSource = false
 		},
 	},
 }
