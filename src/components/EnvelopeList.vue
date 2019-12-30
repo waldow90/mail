@@ -8,6 +8,8 @@
 				:data="env"
 				:folder="folder"
 				@delete="$emit('delete', env.uid)"
+				:selected="isEnvelopeSelected(envelopes.indexOf(env))"
+				@select="onEnvelopeSelected"
 			/>
 			<div id="load-more-mail-messages" key="loadingMore" :class="{'icon-loading-small': loadingMore}" />
 		</transition-group>
@@ -38,10 +40,56 @@ export default {
 		refreshing: {
 			type: Boolean,
 			required: true,
+			default: true,
 		},
 		loadingMore: {
 			type: Boolean,
 			required: true,
+		},
+	},
+	data() {
+		return {
+			shortkeys: {
+				del: ['del'],
+				flag: ['s'],
+				next: ['arrowright'],
+				prev: ['arrowleft'],
+				refresh: ['r'],
+				unseen: ['u'],
+			},
+			selection: [],
+		}
+	},
+	methods: {
+		isEnvelopeSelected(idx) {
+			if (this.selection.length == 0) {
+				return false
+			} 
+			
+			return this.selection.includes(idx)
+		},
+		onEnvelopeSelected(envelope, shiftKey) {
+			const idx = this.envelopes.indexOf(envelope)	
+
+			// If this is the first selected envelope, or the shift key is not pressed, simply add the envelope ID to the selection array
+			if (!shiftKey || this.selection.length == 0) {
+				this.selection.push(idx)
+				return
+			}
+
+			// Otherwise, add all envelopes between the last selected envelope and this one
+			const lastEnv = this.selection[this.selection.length - 1]
+			var start = lastEnv + 1
+			var last = idx
+			if (lastEnv > idx) {
+				start = idx
+				last = lastEnv - 1
+			}
+			for (var i = start; i <= last; i++) {
+				this.selection.push(i)
+			}
+
+			return
 		},
 	},
 }
