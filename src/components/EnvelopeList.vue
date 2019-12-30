@@ -93,12 +93,12 @@ export default {
 		isEnvelopeSelected(idx) {
 			if (this.selection.length == 0) {
 				return false
-			} 
-			
+			}
+
 			return this.selection.includes(idx)
 		},
 		onEnvelopeSelected(envelope, shiftKey) {
-			const idx = this.envelopes.indexOf(envelope)	
+			const idx = this.envelopes.indexOf(envelope)
 
 			console.log(this.selection)
 			// If this is the first selected envelope, or the shift key is not pressed, simply add/remove the envelope ID to/from the selection array
