@@ -3,13 +3,15 @@
 		<transition-group name="list">
 			<AppContentList :show-details="!show">
 			<div v-if="multipleSelection" class="multiselect-header">
-			<div><b>{{ selection.length + " messages selected" }}</b></div>
+				<div>
+					<b>{{ selection.length + ' messages selected' }}</b>
+				</div>
+				<div><b>{{ selection.length + " messages selected" }}</b></div>
 				<Actions class="app-content-list-item-menu" menu-align="right">
-					<ActionButton icon="icon-mail">{{ t('mail', 'Mark read') }}</ActionButton>
-					<ActionButton icon="icon-mail">{{ t('mail', 'Mark unread') }}</ActionButton>
+					<ActionButton icon="icon-mail" @click.prevent="markSelectedSeenOrUnseen(false)">{{ t('mail', 'Mark read') }}</ActionButton>
+					<ActionButton icon="icon-mail" @click.prevent="markSelectedSeenOrUnseen(true)">{{ t('mail', 'Mark unread') }}</ActionButton>
 	                        	<ActionButton icon="icon-delete">{{ t('mail', 'Delete') }}</ActionButton>
         	        	</Actions>
-			</div> 
 			<div id="list-refreshing" key="loading" class="icon-loading-small" :class="{refreshing: refreshing}" />
 			<Envelope
 				v-for="env in envelopes"
@@ -77,19 +79,22 @@ export default {
 			selection: [],
 		}
 	},
-<<<<<<< HEAD
-=======
 	computed: {
-		isSearch() {
-			return this.searchQuery !== undefined
-		},
 		multipleSelection() {
 			// returns true if multiple envelopes are selected
 			return this.selection.length > 0
 		},
 	},
->>>>>>> Shows a header to display actions on multiple messages when needed
 	methods: {
+		markSelectedSeenOrUnseen(seenFlag) {
+			this.selection.forEach(envelopeUid => {
+				this.$store.dispatch('markEnvelopeSeenOrUnseen', {
+					envelope: this.envelopes[envelopeUid],
+					seenFlag: seenFlag,
+				})
+			})
+			this.selection = []
+		},
 		isEnvelopeSelected(idx) {
 			if (this.selection.length == 0) {
 				return false
