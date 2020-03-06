@@ -69,6 +69,9 @@
 				>
 					{{ t('mail', 'Clear locally cached data, in case there are issues with synchronization.') }}
 				</ActionButton>
+				<ActionButton v-if="!account.isUnified && !folder.specialRole" icon="icon-delete" @click="deleteFolder">
+					{{ t('mail', 'Delete folder') }}
+				</ActionButton>
 			</template>
 		</template>
 		<AppNavigationCounter v-if="folder.unread" slot="counter">
@@ -98,6 +101,7 @@ import {getFolderStats} from '../service/FolderService'
 import logger from '../logger'
 import {translatePlural as n} from '@nextcloud/l10n'
 import {translate as translateMailboxName} from '../i18n/MailboxTranslator'
+import {generateUrl} from '@nextcloud/router'
 
 export default {
 	name: 'NavigationFolder',
@@ -133,6 +137,9 @@ export default {
 			folderStats: undefined,
 			loadingMarkAsRead: false,
 			clearingCache: false,
+			loading: {
+				delete: false,
+			},
 		}
 	},
 	computed: {
@@ -278,6 +285,34 @@ export default {
 			} finally {
 				this.clearCache = false
 			}
+		},
+		deleteFolder() {
+			const id = this.folder.id
+			logger.info('delete folder', {folder: this.folder})
+			OC.dialogs.confirmDestructive(
+				t('mail', 'The folder and all messages in it will be deleted.', {
+					folderId: this.folderId,
+				}),
+				t('mail', 'Delete folder'),
+				{
+					type: OC.dialogs.YES_NO_BUTTONS,
+					confirm: t('mail', 'Delete folder {folderId}', {folderId: this.folderId}),
+					confirmClasses: 'error',
+					cancel: t('mail', 'Cancel'),
+				},
+				(result) => {
+					if (result) {
+						this.loading.delete = true
+						return this.$store
+							.dispatch('deleteFolder', {account: this.account, folder: this.folder})
+							.then(() => {
+								logger.info(`folder ${id} deleted`)
+							})
+							.catch((error) => logger.error('could not delete folder', {error}))
+					}
+					this.loading.delete = false
+				}
+			)
 		},
 	},
 }
