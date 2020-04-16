@@ -36,8 +36,8 @@ class IspDb {
 	/** @var string[] */
 	public function getUrls(): array {
 		return [
-			'https://autoconfig.{DOMAIN}/mail/config-v1.1.xml?emailaddress={EMAIL}',
-			'https://{DOMAIN}/.well-known/autoconfig/mail/config-v1.1.xml?emailaddress={EMAIL}',
+			'{SCHEME}://autoconfig.{DOMAIN}/mail/config-v1.1.xml?emailaddress={EMAIL}',
+			'{SCHEME}://{DOMAIN}/.well-known/autoconfig/mail/config-v1.1.xml?emailaddress={EMAIL}',
 			'https://autoconfig.thunderbird.net/v1.1/{DOMAIN}',
 		];
 	}
@@ -114,11 +114,21 @@ class IspDb {
 		foreach ($this->getUrls() as $url) {
 			$url = str_replace("{DOMAIN}", $domain, $url);
 			$url = str_replace("{EMAIL}", $email, $url);
-			$this->logger->debug("IsbDb: querying <$domain> via <$url>");
-
-			$provider = $this->queryUrl($url);
-			if (!empty($provider)) {
-				return $provider;
+            if(strpos($url, "{SCHEME}") !== false) {
+				foreach(array('https', 'http')  as $scheme) {
+					$completeurl = str_replace("{SCHEME}", $scheme, $url);
+					$this->logger->debug("IsbDb: querying <$domain> via <$completeurl>");
+					$provider = $this->queryUrl($completeurl);
+					if (!empty($provider)) {
+						return $provider;
+					} 
+				} 
+			} else {
+				$this->logger->debug("IsbDb: querying <$domain> via <$url>");
+				$provider = $this->queryUrl($url);
+				if (!empty($provider)) {
+					return $provider;
+				}
 			}
 		}
 
