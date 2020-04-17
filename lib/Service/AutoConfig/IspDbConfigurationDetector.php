@@ -163,7 +163,7 @@ class IspDbConfigurationDetector {
  		} else {
 			$user=$imap['username'];
 		}
-		
+
 		try {
 			return $this->imapConnector->connect($email, $password, $name, $host, $port, $encryptionProtocol, $user);
 		} catch (Horde_Imap_Client_Exception $e) {
@@ -211,12 +211,12 @@ class IspDbConfigurationDetector {
 				$user = $email;
 			} elseif ($smtp['username'] === '%EMAILLOCALPART%') {
 				list($user,) = explode("@", $email);
--			} elseif (empty($smtp['username'])) {
+			} elseif (empty($smtp['username'])) {
 				$this->logger->info("smtp username is either an unknown placeholder or is empty");
                 return null;
             } else {
        	        $user=$imap['username'];
-			}		
+			}
 
 			$account->setOutboundHost($smtp['hostname']);
 			$account->setOutboundPort($smtp['port']);
