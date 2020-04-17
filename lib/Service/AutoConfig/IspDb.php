@@ -114,15 +114,15 @@ class IspDb {
 		foreach ($this->getUrls() as $url) {
 			$url = str_replace("{DOMAIN}", $domain, $url);
 			$url = str_replace("{EMAIL}", $email, $url);
-            if(strpos($url, "{SCHEME}") !== false) {
-				foreach(array('https', 'http')  as $scheme) {
+			if (strpos($url, "{SCHEME}") !== false) {
+				foreach (['https', 'http']  as $scheme) {
 					$completeurl = str_replace("{SCHEME}", $scheme, $url);
 					$this->logger->debug("IsbDb: querying <$domain> via <$completeurl>");
 					$provider = $this->queryUrl($completeurl);
 					if (!empty($provider)) {
 						return $provider;
-					} 
-				} 
+					}
+				}
 			} else {
 				$this->logger->debug("IsbDb: querying <$domain> via <$url>");
 				$provider = $this->queryUrl($url);

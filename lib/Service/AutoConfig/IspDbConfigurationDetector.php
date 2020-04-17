@@ -160,7 +160,7 @@ class IspDbConfigurationDetector {
 		} elseif (empty($imap['username'])) {
 			$this->logger->info("imap username is either an invalid placeholder or is empty");
 			return null;
- 		} else {
+		} else {
 			$user=$imap['username'];
 		}
 
@@ -213,9 +213,9 @@ class IspDbConfigurationDetector {
 				list($user,) = explode("@", $email);
 			} elseif (empty($smtp['username'])) {
 				$this->logger->info("smtp username is either an unknown placeholder or is empty");
-                return null;
-            } else {
-       	        $user=$imap['username'];
+				return null;
+			} else {
+				$user = $imap['username'];
 			}
 
 			$account->setOutboundHost($smtp['hostname']);
