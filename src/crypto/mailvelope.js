@@ -30,7 +30,7 @@ const loadMailvelopeDynamically = () =>
 		window.addEventListener('mailvelope', () => res(window.mailvelope), false)
 	})
 
-export const getMailvelope = async () => {
+export const getMailvelope = async() => {
 	if (mailvelope) {
 		return mailvelope
 	}

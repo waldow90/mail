@@ -20,15 +20,15 @@
  */
 
 import uniq from 'lodash/fp/uniq'
-import {translate as t, translatePlural as n} from '@nextcloud/l10n'
-import {generateFilePath} from '@nextcloud/router'
+import { translate as t, translatePlural as n } from '@nextcloud/l10n'
+import { generateFilePath } from '@nextcloud/router'
 
 import Logger from '../logger'
 
 /**
  * @todo use Notification.requestPermission().then once all browsers support promise API
  *
- * @return {Promise}
+ * @returns {Promise}
  */
 const request = () => {
 	if (!('Notification' in window)) {
@@ -49,7 +49,7 @@ const showNotification = (title, body, icon) => {
 	request().then(() => {
 		if (document.querySelector(':focus') !== null) {
 			Logger.debug('browser is active. notification request is ignored')
-			return
+
 		}
 	})
 

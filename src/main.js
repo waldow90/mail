@@ -21,9 +21,9 @@
  */
 
 import Vue from 'vue'
-import {getRequestToken} from '@nextcloud/auth'
-import {sync} from 'vuex-router-sync'
-import {generateFilePath} from '@nextcloud/router'
+import { getRequestToken } from '@nextcloud/auth'
+import { sync } from 'vuex-router-sync'
+import { generateFilePath } from '@nextcloud/router'
 import VueShortKey from 'vue-shortkey'
 import VTooltip from 'v-tooltip'
 
@@ -31,7 +31,7 @@ import App from './App'
 import Nextcloud from './mixins/Nextcloud'
 import router from './router'
 import store from './store'
-import {fixAccountId} from './service/AccountService'
+import { fixAccountId } from './service/AccountService'
 
 __webpack_nonce__ = btoa(getRequestToken())
 __webpack_public_path__ = generateFilePath('mail', '', 'js/')
@@ -40,7 +40,7 @@ sync(store, router)
 
 Vue.mixin(Nextcloud)
 
-Vue.use(VueShortKey, {prevent: ['input', 'div']})
+Vue.use(VueShortKey, { prevent: ['input', 'div'] })
 Vue.use(VTooltip)
 
 const getPreferenceFromPage = (key) => {

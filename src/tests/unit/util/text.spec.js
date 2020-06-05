@@ -20,7 +20,7 @@
  *
  */
 
-import {html, toPlain, plain, detect} from '../../../util/text'
+import { html, toPlain, plain, detect } from '../../../util/text'
 
 describe('text', () => {
 	describe('toPlain', () => {
@@ -89,9 +89,9 @@ describe('text', () => {
 
 		it('converts deeply nested elements to text', () => {
 			const source = html(
-				'<html>' +
-					'<body><p>Hello!</p><p>this <i>is</i> <b>some</b> random <strong>text</strong></p></body>' +
-					'</html>'
+				'<html>'
+					+ '<body><p>Hello!</p><p>this <i>is</i> <b>some</b> random <strong>text</strong></p></body>'
+					+ '</html>'
 			)
 			const expected = plain('Hello!\n\nthis is some random text')
 

@@ -23,7 +23,7 @@ import startsWith from 'lodash/fp/startsWith'
 
 /**
  * @param {Text} message
- * @return {boolean|*}
+ * @returns {boolean|*}
  */
 export const isPgpgMessage = (message) =>
 	message.format === 'plain' && message.value.startsWith('-----BEGIN PGP MESSAGE-----')

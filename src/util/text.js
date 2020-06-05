@@ -19,13 +19,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {curry} from 'ramda'
-import {fromString} from 'html-to-text'
+import { curry } from 'ramda'
+import { fromString } from 'html-to-text'
 
 /**
  * @type {Text}
  */
 class Text {
+
 	constructor(format, value) {
 		this.format = format
 		this.value = value
@@ -33,7 +34,7 @@ class Text {
 
 	/**
 	 * @param {Text} other
-	 * @return {Text}
+	 * @returns {Text}
 	 */
 	append(other) {
 		if (this.format !== other.format) {
@@ -42,6 +43,7 @@ class Text {
 
 		return new Text(this.format, this.value + other.value)
 	}
+
 }
 
 /**
@@ -100,7 +102,7 @@ export const isHtml = isFormat('html')
 
 /**
  * @param {Text} text
- * @return {Text}
+ * @returns {Text}
  */
 export const toPlain = (text) => {
 	if (text.format === 'plain') {
@@ -114,12 +116,12 @@ export const toPlain = (text) => {
 		ignoreImage: true,
 		wordwrap: false,
 		format: {
-			blockquote: function (element, fn, options) {
+			blockquote: function(element, fn, options) {
 				return fn(element.children, options)
 					.replace(/\n\n\n/g, '\n\n') // remove triple line breaks
 					.replace(/^/gm, '> ') // add > quotation to each line
 			},
-			paragraph: function (element, fn, options) {
+			paragraph: function(element, fn, options) {
 				return fn(element.children, options) + '\n\n'
 			},
 		},
@@ -135,7 +137,7 @@ export const toPlain = (text) => {
 
 /**
  * @param {Text} text
- * @return {Text}
+ * @returns {Text}
  */
 export const toHtml = (text) => {
 	if (text.format === 'html') {
