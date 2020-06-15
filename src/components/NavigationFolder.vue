@@ -41,7 +41,14 @@
 				>
 					{{ statsText }}
 				</ActionText>
-
+				<ActionButton
+					v-if="renameLabel && folder.specialRole !== undefined"
+					icon="icon-rename"
+					@click.prevent.stop="openRenameInput"
+				>
+					{{ t('mail', 'Edit name') }}
+				</ActionButton>
+				<ActionInput v-if="renameInput" icon="icon-rename" @submit.prevent.stop="renameFolder" />
 				<ActionButton
 					v-if="folder.specialRole !== 'flagged'"
 					icon="icon-mail"
@@ -98,6 +105,7 @@ import {getFolderStats} from '../service/FolderService'
 import logger from '../logger'
 import {translatePlural as n} from '@nextcloud/l10n'
 import {translate as translateMailboxName} from '../i18n/MailboxTranslator'
+import {showInfo} from '@nextcloud/dialogs'
 
 export default {
 	name: 'NavigationFolder',
@@ -133,6 +141,8 @@ export default {
 			folderStats: undefined,
 			loadingMarkAsRead: false,
 			clearingCache: false,
+			renameLabel: true,
+			renameInput: false,
 		}
 	},
 	computed: {
@@ -278,6 +288,29 @@ export default {
 			} finally {
 				this.clearCache = false
 			}
+		},
+		async renameFolder(event) {
+			this.renameInput = false
+
+			const newName = event.target.querySelector('input[type=text]').value
+			try {
+				await this.$store.dispatch('renameFolder', {
+					folder: this.folder,
+					newName,
+				})
+				this.renameLabel = true
+				this.renameInput = false
+			} catch (error) {
+				showInfo(t('mail', 'An error occurred, unable to rename the folder.'))
+				console.error(error)
+				this.renameLabel = false
+				this.renameInput = true
+			}
+		},
+		openRenameInput() {
+			// Hide label and show input
+			this.renameLabel = false
+			this.renameInput = true
 		},
 	},
 }

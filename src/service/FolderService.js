@@ -39,3 +39,11 @@ export function markFolderRead(accountId, folderId) {
 
 	return Axios.post(url).then((resp) => resp.data)
 }
+
+export function renameFolder(folderId) {
+	const url = generateUrl('/apps/mail/api/accounts/{accountId}/folders', {
+		folderId,
+	})
+
+	return Axios.post(url).then((resp) => resp.data)
+}
