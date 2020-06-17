@@ -65,6 +65,11 @@ return [
 			'verb' => 'POST'
 		],
 		[
+			'name' => 'folders#patch',
+			'url' => '/api/accounts/{accountId}/folders/{folderId}',
+			'verb' => 'PATCH'
+		],
+		[
 			'name' => 'folders#clearCache',
 			'url' => '/api/accounts/{accountId}/folders/{folderId}/sync',
 			'verb' => 'DELETE'

@@ -30,6 +30,7 @@ use OCA\Mail\Exception\ClientException;
 use OCA\Mail\Exception\IncompleteSyncException;
 use OCA\Mail\Exception\MailboxNotCachedException;
 use OCA\Mail\Exception\ServiceException;
+use OCA\Mail\Http\JsonResponse as MailJsonResponse;
 use OCA\Mail\Service\Sync\SyncService;
 use function base64_decode;
 use function is_array;
@@ -82,6 +83,7 @@ class FoldersController extends Controller {
 	 * @TrapError
 	 *
 	 * @param int $accountId
+	 *
 	 * @return JSONResponse
 	 *
 	 * @throws ClientException
@@ -125,7 +127,7 @@ class FoldersController extends Controller {
 				base64_decode($folderId),
 				Horde_Imap_Client::SYNC_NEWMSGSUIDS | Horde_Imap_Client::SYNC_FLAGSUIDS | Horde_Imap_Client::SYNC_VANISHEDUIDS,
 				array_map(function ($uid) {
-					return (int) $uid;
+					return (int)$uid;
 				}, $uids),
 				!$init,
 				$query
@@ -133,7 +135,7 @@ class FoldersController extends Controller {
 		} catch (MailboxNotCachedException $e) {
 			return new JSONResponse(null, Http::STATUS_PRECONDITION_REQUIRED);
 		} catch (IncompleteSyncException $e) {
-			return \OCA\Mail\Http\JsonResponse::fail([], Http::STATUS_ACCEPTED);
+			return MailJsonResponse::fail([], Http::STATUS_ACCEPTED);
 		}
 
 		return new JSONResponse($syncResponse);
@@ -167,6 +169,7 @@ class FoldersController extends Controller {
 	 *
 	 * @param int $accountId
 	 * @param string $folderId
+	 *
 	 * @return JSONResponse
 	 *
 	 * @throws ClientException
@@ -212,6 +215,28 @@ class FoldersController extends Controller {
 	 */
 	public function show() {
 		throw new NotImplemented();
+	}
+
+	/**
+	 * @NoAdminRequired
+	 * @TrapError
+	 *
+	 * @param int $accountId
+	 * @param string $folderId
+	 * @param string|null $name
+	 *
+	 * @return MailJsonResponse
+	 */
+	public function patch(int $accountId, string $folderId, ?string $name): MailJsonResponse {
+		$account = $this->accountService->find($this->currentUserId, $accountId);
+
+		return MailJsonResponse::success(
+			$this->mailManager->updateMailbox(
+				$account,
+				$folderId,
+				$name
+			)
+		);
 	}
 
 	/**

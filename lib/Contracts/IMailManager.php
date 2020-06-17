@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace OCA\Mail\Contracts;
 
 use OCA\Mail\Account;
+use OCA\Mail\Db\Mailbox;
 use OCA\Mail\Exception\ClientException;
 use OCA\Mail\Exception\ServiceException;
 use OCA\Mail\Folder;
@@ -134,4 +135,13 @@ interface IMailManager {
 	 * @return Quota|null
 	 */
 	public function getQuota(Account $account): ?Quota;
+
+	/**
+	 * @param Account $account
+	 * @param string $folderId
+	 * @param string|null $name
+	 *
+	 * @return Mailbox
+	 */
+	public function updateMailbox(Account $account, string $folderId, ?string $name): Mailbox;
 }

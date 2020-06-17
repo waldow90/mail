@@ -363,4 +363,36 @@ class MailManager implements IMailManager {
 			1024 * (int)($storage['limit'] ?? 0)
 		);
 	}
+
+	/**
+	 * @param Account $account
+	 * @param string $folderId
+	 * @param string|null $name
+	 *
+	 * @return Mailbox
+	 * @throws ClientException
+	 * @throws ServiceException
+	 */
+	public function updateMailbox(Account $account, string $folderId, ?string $name): Mailbox {
+		try {
+			$mailbox = $this->mailboxMapper->find($account, $folderId);
+		} catch (DoesNotExistException $e) {
+			throw new ClientException("Mailbox $folderId is unknown");
+		}
+
+		if ($name !== null) {
+			$client = $this->imapClientFactory->getClient($account);
+
+			try {
+				$this->folderMapper->renameFolder($client, $mailbox->getName(), $name);
+			} catch (Horde_Imap_Client_Exception $e) {
+				throw new ServiceException("Could not rename mailbox on IMAP: " . $e->getMessage(), 0, $e);
+			}
+
+			$mailbox->setName($name);
+			$this->mailboxMapper->update($mailbox);
+		}
+
+		return $mailbox;
+	}
 }
