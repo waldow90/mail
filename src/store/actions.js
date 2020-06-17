@@ -54,7 +54,7 @@ import {
 	create as createFolder,
 	fetchAll as fetchAllFolders,
 	markFolderRead,
-	renameFolder,
+	patchFolder,
 } from '../service/FolderService'
 import {
 	deleteMessage,
@@ -700,10 +700,12 @@ export default {
 				throw err
 			})
 	},
-	renameFolder({commit}, {account, folder, newName}) {
-		return renameFolder(folder.id, newName).then((folder) => {
-			console.debug(`folder ${newName} created for folder ${folder.id}`, {folder})
-			commit('renameFolder', {account, folder})
+	async renameFolder({commit}, {account, folder, newName}) {
+		await patchFolder(account.id, folder.id, {
+			name: newName,
 		})
+
+		console.debug(`folder ${newName} created for folder ${folder.id}`, {folder})
+		commit('renameFolder', {account, folder})
 	},
 }

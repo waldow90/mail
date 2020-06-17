@@ -40,10 +40,12 @@ export function markFolderRead(accountId, folderId) {
 	return Axios.post(url).then((resp) => resp.data)
 }
 
-export function renameFolder(folderId) {
-	const url = generateUrl('/apps/mail/api/accounts/{accountId}/folders', {
+export async function patchFolder(accountId, folderId, data) {
+	const url = generateUrl('/apps/mail/api/accounts/{accountId}/folders/{folderId}', {
+		accountId,
 		folderId,
 	})
 
-	return Axios.post(url).then((resp) => resp.data)
+	const response = await Axios.patch(url, data);
+	return response.data.data
 }

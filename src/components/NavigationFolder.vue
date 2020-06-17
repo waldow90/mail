@@ -295,6 +295,7 @@ export default {
 			const newName = event.target.querySelector('input[type=text]').value
 			try {
 				await this.$store.dispatch('renameFolder', {
+					account: this.account,
 					folder: this.folder,
 					newName,
 				})

@@ -233,9 +233,9 @@ class FoldersController extends Controller {
 		return MailJsonResponse::success(
 			$this->mailManager->updateMailbox(
 				$account,
-				$folderId,
+				base64_decode($folderId),
 				$name
-			)
+			)->toFolder()
 		);
 	}
 
