@@ -217,4 +217,7 @@ export default {
 	removeMessage(state, {accountId, folderId, id}) {
 		Vue.delete(state.messages, normalizedMessageId(accountId, folderId, id))
 	},
+	renameFolder(state, { folder, newName }) {
+		state.folders[folder.id].id = newName
+	},
 }

@@ -706,6 +706,6 @@ export default {
 		})
 
 		console.debug(`folder ${newName} created for folder ${folder.id}`, {folder})
-		commit('renameFolder', {account, folder})
+		store.commit('renameFolder', {account, folder})
 	},
 }
