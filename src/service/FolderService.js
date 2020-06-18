@@ -46,6 +46,6 @@ export async function patchFolder(accountId, folderId, data) {
 		folderId,
 	})
 
-	const response = await Axios.patch(url, data);
+	const response = await Axios.patch(url, data)
 	return response.data.data
 }

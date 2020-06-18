@@ -52,7 +52,11 @@
 					v-if="renameInput"
 					icon="icon-rename"
 					:value.sync="folder.displayName"
-					@submit.prevent.stop="renameFolder" />
+					@submit.prevent.stop="renameFolder"
+				/>
+				<ActionText v-if="showSaving" icon="icon-loading-small">
+					{{ t('mail', 'Saving') }}
+				</ActionText>
 				<ActionButton
 					v-if="folder.specialRole !== 'flagged'"
 					icon="icon-mail"
@@ -147,6 +151,7 @@ export default {
 			clearingCache: false,
 			renameLabel: true,
 			renameInput: false,
+			showSaving: false,
 		}
 	},
 	computed: {
@@ -295,6 +300,7 @@ export default {
 		},
 		async renameFolder(event) {
 			this.renameInput = false
+			this.showSaving = true
 
 			const newName = event.target.querySelector('input[type=text]').value
 			try {
@@ -305,17 +311,20 @@ export default {
 				})
 				this.renameLabel = true
 				this.renameInput = false
+				this.showSaving = false
 			} catch (error) {
 				showInfo(t('mail', 'An error occurred, unable to rename the folder.'))
 				console.error(error)
 				this.renameLabel = false
 				this.renameInput = true
+				this.showSaving = false
 			}
 		},
 		openRenameInput() {
 			// Hide label and show input
 			this.renameLabel = false
 			this.renameInput = true
+			this.showSaving = false
 		},
 	},
 }
