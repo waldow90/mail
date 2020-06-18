@@ -42,13 +42,17 @@
 					{{ statsText }}
 				</ActionText>
 				<ActionButton
-					v-if="renameLabel && folder.specialRole !== undefined"
+					v-if="renameLabel && folder.specialRole === null"
 					icon="icon-rename"
 					@click.prevent.stop="openRenameInput"
 				>
 					{{ t('mail', 'Edit name') }}
 				</ActionButton>
-				<ActionInput v-if="renameInput" icon="icon-rename" @submit.prevent.stop="renameFolder" />
+				<ActionInput
+					v-if="renameInput"
+					icon="icon-rename"
+					:value.sync="folder.displayName"
+					@submit.prevent.stop="renameFolder" />
 				<ActionButton
 					v-if="folder.specialRole !== 'flagged'"
 					icon="icon-mail"
