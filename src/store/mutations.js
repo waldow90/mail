@@ -217,7 +217,19 @@ export default {
 	removeMessage(state, {accountId, folderId, id}) {
 		Vue.delete(state.messages, normalizedMessageId(accountId, folderId, id))
 	},
-	renameFolder(state, { folder, newName }) {
-		state.folders[folder.id].id = newName
+	renameFolder(state, { accountId, folder, newName }) {
+		const oldId = folder.id
+
+		// Remove the old entry
+		Vue.delete(state.folders, normalizedFolderId(accountId, oldId))
+		// Update the ID
+		folder.id = btoa(newName)
+		// Set the new entry
+		Vue.set(state.folders, normalizedFolderId(accountId, folder.id), folder)
+
+		// Update the reference
+		const oldNormalized = normalizedFolderId(accountId, oldId)
+		state.accounts[accountId].folders = state.accounts[accountId].folders.filter(id => id !== oldNormalized)
+		state.accounts[accountId].folders.push(normalizedFolderId(accountId, folder.id))
 	},
 }

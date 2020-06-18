@@ -29,6 +29,57 @@ import {
 } from '../../../store/constants'
 
 describe('Vuex store mutations', () => {
+	it('renames a folder', () => {
+		const oldId = btoa('Old')
+		const newId = btoa('New')
+		const state = {
+			accounts: {
+				123: {
+					accountId: 123,
+					id: 123,
+					folders: [
+						'123-' + oldId
+					],
+				},
+			},
+			envelopes: {},
+			folders: {
+				['123-' + oldId]: {
+					id: oldId,
+					envelopeLists: {},
+				},
+			},
+		}
+
+		mutations.renameFolder(state, {
+			accountId: 123,
+			folder: {
+				id: oldId,
+				envelopeLists: {},
+			},
+			newName: 'New'
+		})
+
+		expect(state).to.deep.equal({
+			accounts: {
+				123: {
+					accountId: 123,
+					id: 123,
+					folders: [
+						'123-' + newId
+					],
+				},
+			},
+			envelopes: {},
+			folders: {
+				['123-' + newId]: {
+					id: newId,
+					envelopeLists: {},
+				},
+			},
+		})
+	})
+
 	it('adds envelopes', () => {
 		const state = {
 			accounts: {
