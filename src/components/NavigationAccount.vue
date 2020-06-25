@@ -49,7 +49,7 @@
 			>
 				{{ t('mail', 'Show only subscribed folders') }}
 			</ActionCheckbox>
-			<ActionInput icon="icon-add" @submit="createFolder">
+			<ActionInput icon="icon-folder" @submit="createFolder">
 				{{ t('mail', 'Add folder') }}
 			</ActionInput>
 			<ActionButton v-if="!isFirst" icon="icon-triangle-n" @click="changeAccountOrderUp">

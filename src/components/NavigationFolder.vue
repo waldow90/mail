@@ -52,13 +52,22 @@
 					{{ t('mail', 'Mark all messages of this folder as read') }}
 				</ActionButton>
 
-				<ActionInput
-					v-if="top && !account.isUnified && folder.specialRole !== 'flagged'"
-					icon="icon-add"
-					@submit="createFolder"
+				<ActionButton
+					v-if="addLabel && top && !account.isUnified && folder.specialRole !== 'flagged'"
+					icon="icon-folder"
+					@click="openCreateFolder"
 				>
 					{{ t('mail', 'Add subfolder') }}
-				</ActionInput>
+				</ActionButton>
+				<ActionInput
+					v-if="addInput"
+					icon="icon-folder"
+					:placeholder="t('mail', 'Add folder name')"
+					@submit.prevent.stop="createFolder"
+				/>
+				<ActionText v-if="showSaving" icon="icon-loading-small">
+					{{ t('mail', 'Saving') }}
+				</ActionText>
 
 				<ActionButton
 					v-if="debug && !account.isUnified && folder.specialRole !== 'flagged'"
@@ -133,6 +142,9 @@ export default {
 			folderStats: undefined,
 			loadingMarkAsRead: false,
 			clearingCache: false,
+			addInput: false,
+			addLabel: true,
+			showSaving: false,
 		}
 	},
 	computed: {
@@ -240,16 +252,26 @@ export default {
 			const withPrefix = atob(this.folder.id) + this.folder.delimiter + name
 			logger.info(`creating folder ${withPrefix} as subfolder of ${this.folder.id}`)
 			this.menuOpen = false
-			this.$store
-				.dispatch('createFolder', {
-					account: this.account,
-					name: withPrefix,
-				})
+			this.$store.dispatch('createFolder', {
+				account: this.account,
+				name: withPrefix,
+			})
+			this.addLabel = true
+			this.addInput = false
+			this.showSaving = false
 				.then(() => logger.info(`folder ${withPrefix} created`))
 				.catch((error) => {
 					logger.error(`could not create folder ${withPrefix}`, {error})
 					throw error
 				})
+			this.addInput = true
+			this.addLabel = false
+			this.showSaving = false
+		},
+		openCreateFolder() {
+			this.addLabel = false
+			this.addInput = true
+			this.showSaving = false
 		},
 		markAsRead() {
 			this.loadingMarkAsRead = true
