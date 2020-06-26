@@ -53,18 +53,13 @@
 				</ActionButton>
 
 				<ActionButton
-					v-if="addLabel && top && !account.isUnified && folder.specialRole !== 'flagged'"
+					v-if="!editing && top && !account.isUnified && folder.specialRole !== 'flagged'"
 					icon="icon-folder"
 					@click="openCreateFolder"
 				>
 					{{ t('mail', 'Add subfolder') }}
 				</ActionButton>
-				<ActionInput
-					v-if="addInput"
-					icon="icon-folder"
-					:placeholder="t('mail', 'Add folder name')"
-					@submit.prevent.stop="createFolder"
-				/>
+				<ActionInput v-if="editing" icon="icon-folder" @submit.prevent.stop="createFolder" />
 				<ActionText v-if="showSaving" icon="icon-loading-small">
 					{{ t('mail', 'Saving') }}
 				</ActionText>
@@ -142,9 +137,8 @@ export default {
 			folderStats: undefined,
 			loadingMarkAsRead: false,
 			clearingCache: false,
-			addInput: false,
-			addLabel: true,
 			showSaving: false,
+			editing: false,
 		}
 	},
 	computed: {
@@ -248,6 +242,7 @@ export default {
 		},
 
 		createFolder(e) {
+			this.editing = true
 			const name = e.target.elements[1].value
 			const withPrefix = atob(this.folder.id) + this.folder.delimiter + name
 			logger.info(`creating folder ${withPrefix} as subfolder of ${this.folder.id}`)
@@ -256,21 +251,18 @@ export default {
 				account: this.account,
 				name: withPrefix,
 			})
-			this.addLabel = true
-			this.addInput = false
-			this.showSaving = false
+			this.editing = false
+			this.showSaving = true
 				.then(() => logger.info(`folder ${withPrefix} created`))
 				.catch((error) => {
 					logger.error(`could not create folder ${withPrefix}`, {error})
 					throw error
 				})
-			this.addInput = true
-			this.addLabel = false
+			this.editing = false
 			this.showSaving = false
 		},
 		openCreateFolder() {
-			this.addLabel = false
-			this.addInput = true
+			this.editing = true
 			this.showSaving = false
 		},
 		markAsRead() {
