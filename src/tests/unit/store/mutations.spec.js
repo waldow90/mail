@@ -254,4 +254,66 @@ describe('Vuex store mutations', () => {
 			},
 		})
 	})
+
+	it('removes a folder', () => {
+		const state = {
+			accounts: {
+				[UNIFIED_ACCOUNT_ID]: {
+					accountId: UNIFIED_ACCOUNT_ID,
+					id: UNIFIED_ACCOUNT_ID,
+					folders: [UNIFIED_INBOX_UID, PRIORITY_INBOX_UID],
+				},
+			},
+			folders: {
+				'13-INBOX': {
+					id: 'INBOX',
+					specialUse: ['inbox'],
+					specialRole: 'inbox',
+				},
+				[UNIFIED_INBOX_UID]: {
+					id: UNIFIED_INBOX_ID,
+					specialUse: ['inbox'],
+					specialRole: 'inbox',
+				},
+				[PRIORITY_INBOX_UID]: {
+					id: PRIORITY_INBOX_ID,
+					specialUse: ['inbox'],
+					specialRole: 'inbox',
+				},
+			},
+		}
+
+		mutations.removeFolder(state, {
+			accountId: 13,
+			folderId: 'INBOX',
+			id: 123,
+		})
+
+		expect(state).to.deep.equal({
+			accounts: {
+				[UNIFIED_ACCOUNT_ID]: {
+					accountId: UNIFIED_ACCOUNT_ID,
+					id: UNIFIED_ACCOUNT_ID,
+					folders: [UNIFIED_INBOX_UID, PRIORITY_INBOX_UID],
+				},
+			},
+			folders: {
+				'13-INBOX': {
+					id: 'INBOX',
+					specialUse: ['inbox'],
+					specialRole: 'inbox',
+				},
+				[UNIFIED_INBOX_UID]: {
+					id: UNIFIED_INBOX_ID,
+					specialUse: ['inbox'],
+					specialRole: 'inbox',
+				},
+				[PRIORITY_INBOX_UID]: {
+					id: PRIORITY_INBOX_ID,
+					specialUse: ['inbox'],
+					specialRole: 'inbox',
+				},
+			},
+		})
+	})
 })
