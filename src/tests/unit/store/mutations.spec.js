@@ -258,25 +258,15 @@ describe('Vuex store mutations', () => {
 	it('removes a folder', () => {
 		const state = {
 			accounts: {
-				[UNIFIED_ACCOUNT_ID]: {
-					accountId: UNIFIED_ACCOUNT_ID,
-					id: UNIFIED_ACCOUNT_ID,
-					folders: [UNIFIED_INBOX_UID, PRIORITY_INBOX_UID],
+				13: {
+					accountId: 13,
+					id: 13,
+					folders: ['13-INBOX'],
 				},
 			},
 			folders: {
 				'13-INBOX': {
 					id: 'INBOX',
-					specialUse: ['inbox'],
-					specialRole: 'inbox',
-				},
-				[UNIFIED_INBOX_UID]: {
-					id: UNIFIED_INBOX_ID,
-					specialUse: ['inbox'],
-					specialRole: 'inbox',
-				},
-				[PRIORITY_INBOX_UID]: {
-					id: PRIORITY_INBOX_ID,
 					specialUse: ['inbox'],
 					specialRole: 'inbox',
 				},
@@ -286,15 +276,29 @@ describe('Vuex store mutations', () => {
 		mutations.removeFolder(state, {
 			accountId: 13,
 			folderId: 'INBOX',
-			id: 123,
 		})
 
 		expect(state).to.deep.equal({
 			accounts: {
-				[UNIFIED_ACCOUNT_ID]: {
-					accountId: UNIFIED_ACCOUNT_ID,
-					id: UNIFIED_ACCOUNT_ID,
-					folders: [UNIFIED_INBOX_UID, PRIORITY_INBOX_UID],
+				13: {
+					accountId: 13,
+					id: 13,
+					folders: [],
+				},
+			},
+			folders: {
+
+			},
+		})
+	})
+
+	it('removes a subfolder', () => {
+		const state = {
+			accounts: {
+				13: {
+					accountId: 13,
+					id: 13,
+					folders: ['13-INBOX'],
 				},
 			},
 			folders: {
@@ -302,16 +306,36 @@ describe('Vuex store mutations', () => {
 					id: 'INBOX',
 					specialUse: ['inbox'],
 					specialRole: 'inbox',
+					folders: ['13-INBOX.sub'],
 				},
-				[UNIFIED_INBOX_UID]: {
-					id: UNIFIED_INBOX_ID,
+				'13-INBOX.sub': {
+					id: 'INBOX.sub',
 					specialUse: ['inbox'],
 					specialRole: 'inbox',
+					folders: [],
 				},
-				[PRIORITY_INBOX_UID]: {
-					id: PRIORITY_INBOX_ID,
+			},
+		}
+
+		mutations.removeFolder(state, {
+			accountId: 13,
+			folderId: 'INBOX.sub',
+		})
+
+		expect(state).to.deep.equal({
+			accounts: {
+				13: {
+					accountId: 13,
+					id: 13,
+					folders: ['13-INBOX'],
+				},
+			},
+			folders: {
+				'13-INBOX': {
+					id: 'INBOX',
 					specialUse: ['inbox'],
 					specialRole: 'inbox',
+					folders: [],
 				},
 			},
 		})
